@@ -1,0 +1,9 @@
+#!/bin/bash
+{{ template "script_boilerplate.sh.tmpl"}}
+
+{{ if eq .chezmoi.os "darwin" }}
+    brew bundle --file="$HOME/.Brewfile"
+{{ end }}
+
+# Listen for changes to .Brewfile content
+# {{ sha256sum (include "dot_Brewfile") }}

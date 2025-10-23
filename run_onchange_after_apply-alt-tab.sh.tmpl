@@ -1,0 +1,21 @@
+#!/bin/bash
+{{ template "script_boilerplate.sh.tmpl"}}
+
+# README
+# Alt-Tab settings are stored as a binary .plist file.
+# Managing this in chezmoi directly is not recommended.
+# Instead, chezmoi manages an XML version of the settings exported from the .plist file.
+# To update the XML managed by chezmoi, run the following command.
+# plutil -convert xml1 -o ~/Library/Preferences/com.lwouis.alt-tab-macos.plist.xml ~/Library/Preferences/com.lwouis.alt-tab-macos.plist
+
+{{ if eq .chezmoi.os "darwin" }}
+    xml="$HOME/Library/Preferences/com.lwouis.alt-tab-macos.plist.xml"
+    plist="$HOME/Library/Preferences/com.lwouis.alt-tab-macos.plist"
+    
+    # Convert the XML back to .plist     
+    plutil -convert binary1 -o "$plist" "$xml"
+{{ end }}
+
+
+# Including the hash of the XML file in the comment below to only run this script when its contents have changed
+# {{ sha256sum (include "private_Library/private_Preferences/com.lwouis.alt-tab-macos.plist.xml") }}

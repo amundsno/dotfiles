@@ -14,7 +14,3 @@ elif [ -d "/usr/local/bin" ]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# Install everything from Brewfile
-echo "Installing Homebrew packages..."
-brew bundle --global --file="$HOME/.Brewfile"
-

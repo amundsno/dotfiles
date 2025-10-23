@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Exit the script on:
+    # (-e) command failure
+    # (-u) undefined variable
+    # (-o pipefail) any command failure in a pipeline
+set -euo pipefail
+
+# Helper: log messages with consistent formatting
+log() {
+    echo "[chezmoi] $*"
+}
