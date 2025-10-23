@@ -1,0 +1,22 @@
+#!/bin/bash
+{{ template "script_boilerplate.sh.tmpl"}}
+
+# README
+# iTerm2 settings are stored as a binary .plist file.
+# Managing this in chezmoi directly is not recommended.
+# Instead, chezmoi manages an XML version of the settings exported from the .plist file.
+# To update the XML managed by chezmoi, run the following command.
+# plutil -convert xml1 -o ~/.config/iterm2/com.googlecode.iterm2.plist.xml ~/.config/iterm2/com.googlecode.iterm2.plist
+
+{{ if eq .chezmoi.os "darwin" }}
+    log "Copying settings for tool iTerm2"
+    xml="$HOME/.config/iterm2/com.googlecode.iterm2.plist.xml"
+    plist="$HOME/.config/iterm2/com.googlecode.iterm2.plist"
+    
+    # Convert the XML back to .plist     
+    plutil -convert binary1 -o "$plist" "$xml"
+{{ end }}
+
+
+# Including the hash of the XML file in the comment below to only run this script when its contents have changed
+# {{ sha256sum (include "dot_config/iterm2/com.googlecode.iterm2.plist.xml") }}
