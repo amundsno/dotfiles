@@ -103,3 +103,6 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS+=(brackets)
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# Local per-machine additions
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
