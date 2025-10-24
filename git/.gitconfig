@@ -1,0 +1,18 @@
+[user]
+	name = amundsno
+	email = amund.s.normann@proton.me
+[alias]
+	adog = log --all --decorate --oneline --graph
+	dog = log --decorate --oneline --graph
+[rerere]
+	enabled = true
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[tag]
+	gpgSign = true
+[core]
+	commentChar = *
+[include]
+    path = ~/.gitconfig.local

@@ -1,9 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+# Check for required dependencies
+command -v stow >/dev/null 2>&1 || { echo "❌ Error: stow is required but not installed." >&2; exit 1; }
+command -v gum >/dev/null 2>&1 || { echo "❌ Error: gum is required but not installed." >&2; exit 1; }
+command -v rg >/dev/null 2>&1 || { echo "❌ Error: ripgrep (rg) is required but not installed." >&2; exit 1; }
+command -v git >/dev/null 2>&1 || { echo "❌ Error: git is required but not installed." >&2; exit 1; }
+
 # Define packages to stow
 PACKAGES=(
     "zsh"
+    "git"
+    "stow"
 )
 
 # Suffix to add to conflicting files
@@ -16,16 +24,23 @@ LOG_FILE="$DOTFILES_DIR/stow.log"
 
 log() {
     # Write to terminal
-    gum log -t "timeonly" $*
+    gum log -t "timeonly" "$@"
 
     # Write to log file
-    gum log -t "datetime" -o "$LOG_FILE" $*
+    gum log -t "datetime" -o "$LOG_FILE" "$@"
 }
 
 # Checks for conflicts with existing local files before stowing.
 # If a conflicting file exists, give it a suffix to avoid collision.
 safe_stow() {
-    PACKAGE=$1
+    local PACKAGE=$1
+    
+    # Validate that the package directory exists
+    if [[ ! -d "$DOTFILES_DIR/$PACKAGE" ]]; then
+        log -l error "❌ Package directory '$PACKAGE' does not exist"
+        return 1
+    fi
+    
     log -l info "📦 Stowing package: '$PACKAGE'"
 
     conflicts=$(stow --target="$TARGET" --no --verbose "$PACKAGE" 2>&1 | grep "cannot stow" || true)
@@ -35,26 +50,41 @@ safe_stow() {
         echo "$conflicts" | tee -a "$LOG_FILE"
         
         while read -r line; do
+            conflicting_file=$(echo "$line" | rg -or '$1' "existing target (.*) since" || true)
             
-            conflicting_file=$(echo "$line" | rg -or '$1' "existing target (.*) since")
-            
-            # If $conflicting_file is an empty string
+            # If $conflicting_file is an empty string, skip this line
             [[ -z "$conflicting_file" ]] && continue
 
-            src="$TARGET/$conflicting_file"
+            local src="$TARGET/$conflicting_file"
             # If $src is a file (-f) and not a symbolic link (-L)
-            if [[  -f "$src" && ! -L "$src" ]]; then
-                mv "$src" "$src$BACKUP_SUFFIX"
-                log -l warn "   ✏️ Moved '$src' ➡︎ '$src$BACKUP_SUFFIX'"
+            if [[ -f "$src" && ! -L "$src" ]]; then
+                # Check if backup already exists
+                if [[ -f "$src$BACKUP_SUFFIX" ]]; then
+                    log -l warn "   ⚠️ Backup '$src$BACKUP_SUFFIX' already exists, skipping"
+                    continue
+                fi
+                
+                if mv "$src" "$src$BACKUP_SUFFIX" 2>/dev/null; then
+                    log -l warn "   ✏️ Moved '$src' ➡︎ '$src$BACKUP_SUFFIX'"
+                else
+                    log -l error "   ❌ Failed to move '$src'"
+                    return 1
+                fi
+            elif [[ -d "$src" && ! -L "$src" ]]; then
+                log -l warn "   📁 Directory conflict: '$src' (manual resolution required)"
             fi
         done <<< "$conflicts"
 
     else
-        log -l info "✅ No conflicts detected"
+        log -l info "😌 No conflicts detected"
     fi
     
-    stow --target="$TARGET" "$PACKAGE"
-    log -l info "🔗 Package '$PACKAGE' stowed successfully"
+    if stow --target="$TARGET" "$PACKAGE" 2>/dev/null; then
+        log -l info "🔗 Package '$PACKAGE' stowed successfully"
+    else
+        log -l error "❌ Failed to stow package '$PACKAGE'"
+        return 1
+    fi
 }
 
 # Initialize log file with timestamp
@@ -65,14 +95,54 @@ safe_stow() {
 } >> "$LOG_FILE"
 
 
+# Change to dotfiles directory to ensure relative paths work correctly
+cd "$DOTFILES_DIR" || {
+    log -l error "❌ Failed to change to dotfiles directory: $DOTFILES_DIR"
+    exit 1
+}
+
 # Stow packages
 log -l info "🏃 Running stow.sh to stow packages"
 
-# Ensure all submodules are fetched
-log -l info "🌐 Updating all git submodules"
-git submodule update --init --recursive
-log -l info "✅ Git submodules updated successfully"
+# Ensure all submodules are fetched (only if we're in a git repository)
+if [[ -d .git ]]; then
+    log -l info "🌐 Updating all git submodules"
+    if git submodule update --init --recursive; then
+        log -l info "✅ Git submodules updated successfully"
+    else
+        log -l warn "⚠️ Git submodule update failed, continuing anyway"
+    fi
+else
+    log -l info "📁 Not a git repository, skipping submodule update"
+fi
+
+# Track success/failure of package installations
+failed_packages=()
+successful_packages=()
 
 for package in "${PACKAGES[@]}"; do
-    safe_stow "$package"
+    if safe_stow "$package"; then
+        successful_packages+=("$package")
+    else
+        failed_packages+=("$package")
+        log -l error "❌ Failed to stow package: $package"
+    fi
 done
+
+# Final summary
+{
+    echo "==========================================="
+    echo "Stow execution completed: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "Successful packages: ${successful_packages[*]:-none}"
+    echo "Failed packages: ${failed_packages[*]:-none}"
+    echo "==========================================="
+} >> "$LOG_FILE"
+
+if [[ ${#failed_packages[@]} -eq 0 ]]; then
+    log -l info "✅ All packages stowed successfully!"
+else
+    log -l error "❌ ${#failed_packages[@]} package(s) failed to stow: ${failed_packages[*]}"
+    exit 1
+fi
+
+log -l info "📝 Log saved to: $LOG_FILE"
