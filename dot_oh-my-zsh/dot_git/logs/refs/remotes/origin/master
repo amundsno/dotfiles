@@ -1,3 +1,0 @@
-0000000000000000000000000000000000000000 cef64c465aa81b68fbbec5b008eeae1cb63805d3 amundsno <amund.s.normann@proton.me> 1755697253 +0200	fetch --depth=1 origin: storing head
-cef64c465aa81b68fbbec5b008eeae1cb63805d3 8c168e26625ac8376d9156b1b189cd2ae8c16dc7 amundsno <amund.s.normann@proton.me> 1757412890 +0200	pull --quiet --rebase origin master: fast-forward
-8c168e26625ac8376d9156b1b189cd2ae8c16dc7 d57775d89e15687b87eef990b864492d6c973238 amundsno <amund.s.normann@proton.me> 1759227506 +0200	pull --quiet --rebase origin master: fast-forward
