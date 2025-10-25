@@ -1,3 +1,4 @@
+brew "stow"
 brew "azure-cli"
 brew "chezmoi"
 brew "chroma"
