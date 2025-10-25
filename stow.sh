@@ -1,26 +1,31 @@
 #!/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+cd "$SCRIPT_DIR"
+
+source "./helpers.sh"
+
 # Check for required dependencies
-command -v stow >/dev/null 2>&1 || { echo "❌ Error: stow is required but not installed." >&2; exit 1; }
-command -v gum >/dev/null 2>&1 || { echo "❌ Error: gum is required but not installed." >&2; exit 1; }
-command -v rg >/dev/null 2>&1 || { echo "❌ Error: ripgrep (rg) is required but not installed." >&2; exit 1; }
-command -v git >/dev/null 2>&1 || { echo "❌ Error: git is required but not installed." >&2; exit 1; }
+require_commands stow gum rg git
 
 # Define packages to stow
 PACKAGES=(
+    "stow-config"
+    "macos"
     "zsh"
     "git"
-    "stow"
+    "iterm2"
+    "vim"
 )
 
 # Suffix to add to conflicting files
 BACKUP_SUFFIX=".local"
 
 
-DOTFILES_DIR=$(cd "$(dirname "$0")" && pwd)
+DOTFILES_DIR="$SCRIPT_DIR"
 TARGET=$HOME
-LOG_FILE="$DOTFILES_DIR/stow.log"
+LOG_FILE="$DOTFILES_DIR/stow.sh.log"
 
 log() {
     # Write to terminal
@@ -56,9 +61,11 @@ safe_stow() {
             [[ -z "$conflicting_file" ]] && continue
 
             local src="$TARGET/$conflicting_file"
+            
             # If $src is a file (-f) and not a symbolic link (-L)
             if [[ -f "$src" && ! -L "$src" ]]; then
-                # Check if backup already exists
+                
+                # Check if the backup already exists
                 if [[ -f "$src$BACKUP_SUFFIX" ]]; then
                     log -l warn "   ⚠️ Backup '$src$BACKUP_SUFFIX' already exists, skipping"
                     continue

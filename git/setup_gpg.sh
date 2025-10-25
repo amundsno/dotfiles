@@ -1,13 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check for required dependencies
-command -v gpg >/dev/null 2>&1 || { echo "❌ Error: gpg is required but not installed." >&2; exit 1; }
-command -v gum >/dev/null 2>&1 || { echo "❌ Error: gum is required but not installed." >&2; exit 1; }
-command -v rg >/dev/null 2>&1 || { echo "❌ Error: ripgrep (rg) is required but not installed." >&2; exit 1; }
-
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-LOG_FILE="$SCRIPT_DIR/setup_gpg.log"
+cd "$SCRIPT_DIR"
+
+source "../helpers.sh"
+
+# Check for required dependencies
+require_commands gpg gum rg
+
+LOG_FILE="./setup_gpg.sh.log"
 
 # Initialize log file with timestamp
 {
