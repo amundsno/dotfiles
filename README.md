@@ -1,6 +1,6 @@
 # Dotfiles
 
-Automated setup for a new macOS development environment.
+Automated setup for a new macOS development environment using Stow.
 
 ## Quick Start
 ```sh
@@ -30,10 +30,3 @@ git submodule deinit -f zsh/.oh-my-zsh-custom/plugins/$REPO_NAME
 git rm -f zsh/.oh-my-zsh-custom/plugins/$REPO_NAME
 git commit -m "Remove $REPO_NAME plugin for oh-my-zsh"
 ```
-
-# TODO
-- Bootstrap script to setup a new Mac
-    - Change default system settings
-    - Install Homebrew base packages
-
-- Plist setting strategy for tools that use that format (e.g. alt-tab and iTerm2)
