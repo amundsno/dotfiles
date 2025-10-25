@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set +e # Continue despite errors
 
 # Ensure dockutil is installed
 if ! command -v dockutil >/dev/null 2>&1; then
