@@ -208,35 +208,6 @@ defaults write com.apple.dock show-recents -bool false
 # defaults write com.apple.dock wvous-bl-corner -int 5
 # defaults write com.apple.dock wvous-bl-modifier -int 0
 
-###############################################################################
-# Safari & WebKit                                                             #
-###############################################################################
-
-# @amundsno: I'm not using Safari, but I'm keeping the privacy related settings
-
-# Privacy: don’t send search queries to Apple
-defaults write com.apple.Safari UniversalSearchEnabled -bool false
-defaults write com.apple.Safari SuppressSearchSuggestions -bool true
-
-# Warn about fraudulent websites
-defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
-
-# Block pop-up windows
-defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
-
-# Disable auto-playing video
-defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
-defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-
-# Enable “Do Not Track”
-defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
-
-# Update extensions automatically
-defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
-
 
 ###############################################################################
 # Activity Monitor                                                            #
@@ -262,18 +233,8 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 
 
 ###############################################################################
-# Kill affected applications                                                  #
+# Done                                                                        #
 ###############################################################################
-
-echo "🔁 Restarting affected applications..."
-
-for app in "Activity Monitor" \
-	"Dock" \
-	"Finder" \
-	"Messages" \
-	"Safari"; do
-	killall "${app}" &> /dev/null
-done
 
 echo "✅ Done applying settings"
 echo "⚠️ Note that some of these changes require a logout/restart to take effect."
