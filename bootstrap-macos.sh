@@ -25,7 +25,7 @@ if [[ "$(uname)" != "Darwin" ]]; then
 fi
 
 # Check if this looks like a fresh system
-if [[ ! -f "bootstrap-macos.log" ]]; then
+if [[ ! -f "$LOG_FILE" ]]; then
     log "📋 Applying system settings..."
     ./macos/apply_system_settings.sh
 else
