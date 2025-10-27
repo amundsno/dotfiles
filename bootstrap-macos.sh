@@ -28,16 +28,19 @@ fi
 if [[ ! -f "$LOG_FILE" ]]; then
     log "📋 Applying system settings..."
     ./macos/apply_system_settings.sh
+    
+    log "🎯 Configuring Dock..."
+    ./macos/configure_dock.sh
+
+    log "👥 Adding user to _developer group"
+    ./macos/add_to_developer_group.sh
 else
-    log "⏭️ Skipping system settings (already applied)"
+    log "⏭️ Skipping system and Dock settings (already applied)"
 fi
 
 log "🍺 Setting up Homebrew and packages..."
 ./macos/install_homebrew.sh
 ./macos/install_packages.sh
-
-log "🎯 Configuring Dock..."
-./macos/configure_dock.sh
 
 log "🔗 Stowing dotfiles..."
 ./stow.sh
