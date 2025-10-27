@@ -48,6 +48,9 @@ log "🔗 Stowing dotfiles..."
 log "⚙️  Importing application preferences..."
 ./import-plists.sh
 
+log "🐳 Setting up Docker Buildx..."
+./docker/setup_buildx.sh
+
 log "🔐 Setting up GPG and SSH for Git..."
 ./git/setup_gpg.sh
 ./git/setup_ssh.sh
