@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Pre-push hook to capture commits made since last push
+# Commits are written to ~/Dev/contributions/<repo-name>/pre-push-YYYY-MM-DDTHHMM.txt
+
+# Get the repository name (last part of the git remote URL)
+repo_name=$(basename -s .git "$(git config --get remote.origin.url)" 2>/dev/null)
+if [ -z "$repo_name" ]; then
+    # Fallback to current directory name if no remote
+    repo_name=$(basename "$(cd "$(dirname ../../"$0")" && pwd)")
+fi
+
+# Create contributions directory structure
+contributions_dir="$HOME/Dev/contributions/${repo_name}"
+mkdir -p "$contributions_dir"
+
+# Generate timestamp for filename (format: YYYY-MM-DDTHHMM)
+timestamp=$(date +"%Y-%m-%dT%H%M")
+
+# Output file path with timestamp
+output_file="${contributions_dir}/pre-push-${timestamp}.txt"
+
+# Read from stdin (git passes remote name and URL)
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+    # Skip if deleting a branch
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        continue
+    fi
+    
+    # Get the current branch name
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    
+    # If remote_sha is all zeros, this is a new branch
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        # For new branches, get all commits
+        commits_range="$local_sha"
+        range_description="all commits on new branch '$current_branch'"
+    else
+        # For existing branches, get commits since last push
+        commits_range="$remote_sha..$local_sha"
+        range_description="commits since last push to '$current_branch'"
+    fi
+    
+    # Check if there are any commits to process
+    if ! commit_count=$(git rev-list --count "$commits_range" 2>/dev/null) || [ "$commit_count" -eq 0 ]; then
+        continue
+    fi
+    
+    # Create header with timestamp and repository info
+    {
+        echo "================================" 
+        echo "Repository: $repo_name" 
+        echo "Branch: $current_branch" 
+        echo "Push time: $(date)" 
+        echo "Range: $range_description ($commit_count commits)" 
+        echo "================================" 
+        echo "" 
+    } >> "$output_file"
+    
+    
+    # Get commit details with format: hash, date, author, subject, and body
+    git log --format="Commit: %H%nDate: %ci%nAuthor: %an <%ae>%nSubject: %s%n%nBody:%n%b%n----%n" "$commits_range" >> "$output_file"
+    
+    {
+    echo ""
+    echo "================================" 
+    echo "End of push on $(date)"
+    echo "================================" 
+    echo ""
+    } >> "$output_file"
+    echo "📝 pre-push(log-contributions): Wrote $commit_count commits to $output_file"
+done
+
+exit 0
