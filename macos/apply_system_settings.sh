@@ -71,7 +71,7 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 ###############################################################################
 
 # Save screenshots to the desktop
-defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+defaults write com.apple.screencapture target -string "preview"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
