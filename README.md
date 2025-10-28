@@ -30,3 +30,9 @@ git submodule deinit -f zsh/.oh-my-zsh-custom/plugins/$REPO_NAME
 git rm -f zsh/.oh-my-zsh-custom/plugins/$REPO_NAME
 git commit -m "Remove $REPO_NAME plugin for oh-my-zsh"
 ```
+
+# TODO
+## Installing Git Hooks
+Write a script (with gum) for installing and clearing custom hooks to a git repository.
+Use stow for linking, so that changes to the hooks are reflected in all repos.
+If there are existing hooks, rename it to *.local and include it at the start/end of the relevant hook
