@@ -1,3 +1,4 @@
+brew "corepack"
 brew "stow"
 brew "azure-cli"
 brew "chezmoi"
