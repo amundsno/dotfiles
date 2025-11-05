@@ -11,7 +11,7 @@ if [ -z "$repo_name" ]; then
 fi
 
 # Create contributions directory structure
-contributions_dir="$HOME/Dev/contributions/${repo_name}"
+contributions_dir="$HOME/Dev/meta/contributions/${repo_name}"
 mkdir -p "$contributions_dir"
 
 # Generate timestamp for filename (format: YYYY-MM-DDTHHMM)

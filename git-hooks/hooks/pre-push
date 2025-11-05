@@ -28,7 +28,7 @@ echo "🏃 Running pre-push hooks from $HOOK_DIR"
 for hook in "$HOOK_DIR"/*; do
     if [ -f "$hook" ] && [ -x "$hook" ]; then
         hook_name=$(basename "$hook")
-        echo "⚙️ pre-push($hook_name): Starting..."
+        echo "🏃 pre-push($hook_name): Starting..."
         
         # Pass the captured stdin to each hook
         if ! "$hook" < "$temp_stdin"; then
