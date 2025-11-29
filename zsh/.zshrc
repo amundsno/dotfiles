@@ -70,7 +70,7 @@ ZSH_CUSTOM=$HOME/.oh-my-zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-syntax-highlighting colored-man-pages colorize extract aliases)
+plugins=(git zsh-syntax-highlighting colored-man-pages colorize extract aliases)
 
 source $ZSH/oh-my-zsh.sh
 
