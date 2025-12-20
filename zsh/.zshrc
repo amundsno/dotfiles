@@ -103,6 +103,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS+=(brackets)
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias csr="~/dotfiles/compress_screen_recording.sh"
 
 # Local per-machine additions
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
